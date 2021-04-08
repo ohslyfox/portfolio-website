@@ -1,3 +1,8 @@
+const path = require('path');
+
 module.exports = {
-    mode: "production"
+    mode: "production",
+    output: {
+        path: path.resolve(__dirname, 'root/dist'),
+    }
 }
