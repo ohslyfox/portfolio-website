@@ -53,7 +53,6 @@ const main = () => {
     windowVector = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     mouseLocation = { x: 0, y: 0 };
     colorIndex = Math.round(Math.random() * (patterns.length - 1));
-    console.log(colorIndex);
     particleColor = patterns[colorIndex];
     particleTexture = getDefaultTexture();
     init();
