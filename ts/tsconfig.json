@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "amd",
+    "target": "ES5",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "sourceRoot": "../ts",
+    "rootDir": "../ts",
+    "outDir": "dist/",
+  },
+  "include": ["*.ts"],
+}

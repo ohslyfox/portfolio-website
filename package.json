@@ -1,0 +1,27 @@
+{
+  "name": "portfolio-website-yarn",
+  "version": "1.0.0",
+  "description": "portfolio website",
+  "main": "./dist/main.js",
+  "repository": "https://github.com/ohslyfox/portfolio-website.git",
+  "author": "Patrick Finger",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "watch": "tsc -b -w",
+    "build": "yarn lint && tsc --build",
+    "postbuild": "webpack ./ts/dist/main.js --config webpack.config.js"
+  },
+  "dependencies": {
+    "@types/node": "^14.14.37",
+    "three.js": "^0.77.1",
+    "typescript": "^4.2.3",
+    "webpack": "^5.30.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.21.0",
+    "@typescript-eslint/parser": "^4.21.0",
+    "eslint": "^7.23.0",
+    "webpack-cli": "^4.6.0"
+  }
+}

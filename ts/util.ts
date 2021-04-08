@@ -1,0 +1,17 @@
+import { Color } from "types";
+
+export const lerp = (start: number, end: number, t: number): number => {
+    return start * (1 - t) + end * t;
+};
+
+export const map = (input: number, y1: number, y2: number, y3: number, y4: number): number => {
+    return (y3 + ((y4 - y3) / (y2 - y1)) * (input - y1));
+};
+
+export const shadeColor = (color: Color, percent: number): Color => {
+    return {
+        r: Math.round(Math.max(0, Math.min(color.r * (100 + percent) / 100, 255))),
+        g: Math.round(Math.max(0, Math.min(color.g * (100 + percent) / 100, 255))),
+        b: Math.round(Math.max(0, Math.min(color.b * (100 + percent) / 100, 255)))
+    }
+}

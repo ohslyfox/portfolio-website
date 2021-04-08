@@ -1,0 +1,31 @@
+@font-face {
+  font-family: cascadia;
+  src: url(../../fonts/CascadiaMono.woff2);
+}
+
+.menu {
+  position: fixed;
+  overflow: hidden;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.text>a {
+  text-decoration: none;
+  color: rgb(130, 219, 252);
+  font-family: cascadia;
+  font-size: 10em;
+  text-shadow: -4px 0 rgb(50, 50, 50), 0 2px rgb(50, 50, 50), 2px 0 rgb(50, 50, 50), 0 -2px rgb(50, 50, 50);
+  transition: 0.2s;
+}
+
+html, body {
+  background-color: #ffffff;
+  background-size: 100%;
+  background-image: linear-gradient(135deg, #007BA7, #6F456E 65%);
+  text-align: center;
+  margin: 0px;
+  overflow: hidden;
+}
