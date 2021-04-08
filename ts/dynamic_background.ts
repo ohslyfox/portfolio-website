@@ -52,7 +52,8 @@ const main = () => {
     pageFade = getItemFade("menu-fade");
     windowVector = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     mouseLocation = { x: 0, y: 0 };
-    colorIndex = 0;
+    colorIndex = Math.round(Math.random() * (patterns.length - 1));
+    console.log(colorIndex);
     particleColor = patterns[colorIndex];
     particleTexture = getDefaultTexture();
     init();
@@ -145,7 +146,7 @@ const stepColor = (): void => {
 
 const getDefaultTexture = (): TextureKVP => {
     const date = new Date();
-    let key = Math.round(Math.random()) == 0 ? "STAR" : "CIRCLE";
+    let key = "STAR";
 
     const stringDate = date.getMonth() + "/" + date.getDate();
     switch (stringDate) {
