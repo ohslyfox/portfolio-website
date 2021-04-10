@@ -1,4 +1,4 @@
-import { AmbientLight, PerspectiveCamera, Scene, Sprite, SpriteMaterial, TextureLoader, WebGLRenderer } from 'three';
+import { AmbientLight, PerspectiveCamera, Scene, Sprite, SpriteMaterial, Texture, TextureLoader, WebGLRenderer } from 'three';
 import { Color, KeyPressEvent, MouseMoveEvent, PointF, TextureKVP } from './types';
 import { lerp, map, shadeColor } from './util';
 import { Fade, getItemFade } from './fade';
@@ -10,7 +10,7 @@ const PI_2_100_50 = (PI_2 / 100) / 10;
 
 const textureLoader = new TextureLoader();
 textureLoader.crossOrigin = "";
-const textures: Record<string, THREE.Texture> = {
+const textures: Record<string, Texture> = {
     "CIRCLE": textureLoader.load('https://i.imgur.com/zI3V12h.png'),
     "STAR": textureLoader.load('https://i.imgur.com/FBSbt4n.png'),
     "HEART": textureLoader.load('https://i.imgur.com/lSo1E7E.png'),
@@ -24,7 +24,7 @@ const patterns: Color[] = [
     { r: 255, g: 255, b: 100 },
     { r: 100, g: 255, b: 100 },
     { r: 100, g: 255, b: 255 },
-    { r: 100, g: 100, b: 255 },
+    { r: 175, g: 125, b: 255 },
     { r: 255, g: 100, b: 255 },
 ];
 
@@ -46,10 +46,10 @@ const counts: number[] = [];
 let count = 0;
 
 const main = () => {
-    camera = new PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 100000);
+    camera = new PerspectiveCamera(95, window.innerWidth / window.innerHeight, 1, 100000);
     scene = new Scene();
     renderer = new WebGLRenderer({ alpha: true });
-    pageFade = getItemFade("menu-fade");
+    pageFade = getItemFade("menu-fade", 0, .8);
     windowVector = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     mouseLocation = { x: 0, y: 0 };
     colorIndex = Math.round(Math.random() * (patterns.length - 1));
@@ -75,7 +75,7 @@ const init = (): void => {
             scene.add(particle);
         }
     }
-    scene.add(new AmbientLight(0x404040));
+    scene.add(new AmbientLight(0xFFFFFF));
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -102,8 +102,8 @@ const renderPageText = () => {
 }
 
 const renderDynamicBackground = () => {
-    const xPos = -0.3 * mouseLocation.x - camera.position.x;
-    const yPos = 0.8 * mouseLocation.y - camera.position.y;
+    const xPos = map(mouseLocation.x, -windowVector.x, windowVector.x, 125, -125);
+    const yPos = map(mouseLocation.y, -windowVector.y, windowVector.y, -125, 125);
     camera.position.x = camera.position.x != xPos ? (lerp(camera.position.x, xPos, .01)) : xPos;
     camera.position.y = camera.position.y != yPos ? (lerp(camera.position.y, yPos, .01)) : yPos;
     camera.lookAt(scene.position);
@@ -116,7 +116,7 @@ const renderDynamicBackground = () => {
             particle.position.y = 10 * (iz + 2) * Math.sin(iz + 1 * counts[ix]);
             particle.scale.x = particle.scale.y = 2 + iz + (Math.sin(iz + count) * 5.5);
 
-            const shadedColor = shadeColor(particleColor, map(particle.scale.x, 0, 35, -66, 33));
+            const shadedColor = shadeColor(particleColor, map(particle.scale.x, 0, 30, -70, 40));
             particle.material.color.set("rgb(" + shadedColor.r + "," + shadedColor.g + "," + shadedColor.b + ")");
         }
         counts[ix] += PI_2_1000_50;
@@ -133,14 +133,13 @@ const stepColor = (): void => {
         colorIndex = (colorIndex + 1) % patterns.length;
         colorStep = 0;
     }
-
     const nextIndex = colorIndex == patterns.length - 1 ? 0 : colorIndex + 1;
     particleColor = {
         r: lerp(patterns[colorIndex].r, patterns[nextIndex].r, colorStep),
         g: lerp(patterns[colorIndex].g, patterns[nextIndex].g, colorStep),
         b: lerp(patterns[colorIndex].b, patterns[nextIndex].b, colorStep),
     };
-    colorStep = Math.min(1, colorStep + 0.001);
+    colorStep = Math.min(1, colorStep + 0.002);
 }
 
 const getDefaultTexture = (): TextureKVP => {
@@ -176,12 +175,6 @@ const onWindowResize = (): void => {
 const onDocumentClick = (): void => {
     if (mouseLocation.x > -windowVector.x && mouseLocation.x < -(windowVector.x / 2)) {
         if (mouseLocation.y > windowVector.y / 2 && mouseLocation.y < windowVector.y) {
-            const particleID = particleTexture.id;
-            particleTexture = {
-                id: particleID == "STAR" ? "CIRCLE" : "STAR",
-                value: particleID == "STAR" ? textures["CIRCLE"] : textures["STAR"]
-            }
-
             switch (secretMessage) {
                 case "cow":
                     particleTexture = {
@@ -196,18 +189,17 @@ const onDocumentClick = (): void => {
                     }
                     break;
                 default:
-
+                    particleTexture = {
+                        id: particleTexture.id == "STAR" ? "CIRCLE" : "STAR",
+                        value: particleTexture.id == "STAR" ? textures["CIRCLE"] : textures["STAR"]
+                    }
                     break;
             }
 
             secretMessage = "";
-            let i = 0;
-            for (let ix = 0; ix < COUNT_X; ix++) {
-                for (let iz = 0; iz < COUNT_Z; iz++) {
-                    const localP = particles[i++];
-                    localP.material = new SpriteMaterial({ map: particleTexture.value });
-                }
-            }
+            particles.forEach((p) => {
+                p.material = new SpriteMaterial({ map: particleTexture.value });
+            })
         }
     }
 }
@@ -215,7 +207,7 @@ const onDocumentClick = (): void => {
 const onDocumentMouseMove = (event: MouseMoveEvent): void => {
     mouseLocation = {
         x: event.clientX - windowVector.x,
-        y: event.clientY - windowVector.y
+        y: event.clientY - windowVector.y,
     }
     pageFade.onMouseMove();
 }

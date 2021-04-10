@@ -1,4 +1,4 @@
-import { map } from './util';
+import { mapAndBound } from './util';
 
 export interface Fade {
     interval: number;
@@ -14,29 +14,33 @@ class ItemFade implements Fade {
     public startInterval: number;
     public maxInterval: number;
     private opacity: number;
+    private minOpacity: number;
+    private maxOpacity: number;
     public fadeItems: NodeListOf<HTMLElement>;
 
-    public constructor(className: string, sInterval: number, mInterval: number) {
+    public constructor(className: string, sInterval: number, mInterval: number, minOpacity: number, maxOpacity: number) {
         this.interval = 5000;
-        this.opacity = 1;
+        this.opacity = maxOpacity;
         this.fadeItems = document.querySelectorAll(className);
         this.startInterval = sInterval;
         this.maxInterval = mInterval;
+        this.minOpacity = minOpacity;
+        this.maxOpacity = maxOpacity;
     }
 
     public step(): void {
         this.interval = this.interval > 0 ? this.interval - 5 : this.interval;
-        this.opacity = map(this.interval, 0, 1500, 0, 1);
+        this.opacity = mapAndBound(this.interval, 0, 1500, this.minOpacity, this.maxOpacity);
         this.fadeItems.forEach((elem: HTMLElement) => {
             elem.style.opacity = this.opacity.toString();
         });
     }
 
     public onMouseMove(): void {
-        this.interval = this.interval > this.maxInterval ? this.interval : this.interval + 250;
+        this.interval = this.interval > this.maxInterval + 2000 ? this.interval : this.interval + 100;
     }
 }
 
-export const getItemFade = (className: string): Fade => {
-    return new ItemFade(`.${className}`, 4500, 2000);
+export const getItemFade = (className: string, minOpacity: number, maxOpacity: number): Fade => {
+    return new ItemFade(`.${className}`, 4500, 2000, minOpacity, maxOpacity);
 };

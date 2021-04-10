@@ -1,6 +1,6 @@
 @font-face {
   font-family: cascadia;
-  src: url(../fonts/CascadiaMono.woff2);
+  src: url(../fonts/JuliaMono-Regular.ttf);
 }
 
 .menu {
@@ -16,16 +16,15 @@
   text-decoration: none;
   color: rgb(130, 219, 252);
   font-family: cascadia;
-  font-size: 5em;
-  text-shadow: -4px 0 rgb(50, 50, 50), 0 2px rgb(50, 50, 50),
-    2px 0 rgb(50, 50, 50), 0 -2px rgb(50, 50, 50);
+  font-size: 6em;
+  text-shadow: -6px 0 rgb(50, 50, 50), 0 3px rgb(50, 50, 50),
+    3px 0 rgb(50, 50, 50), 0 -3px rgb(50, 50, 50);
   transition: 0.2s;
 }
 
 .text > a:hover {
   font-size: 7em;
   transition: 0.2s;
-  /*color: rgb(248, 185, 247);*/
   color: #fcc782;
   cursor: pointer;
 }
@@ -53,4 +52,18 @@
   text-align: center;
   margin: 0px;
   overflow: hidden;
+}
+
+.badge {
+  opacity: 50%;
+  background: transparent;
+  position: fixed;
+  transition-timing-function:ease;
+  transition-duration: 0.5s;
+}
+
+.badge:hover {
+  opacity: 85%;
+  transition-timing-function:ease;
+  transition-duration: 0.5s;
 }

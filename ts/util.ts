@@ -8,6 +8,11 @@ export const map = (input: number, y1: number, y2: number, y3: number, y4: numbe
     return (y3 + ((y4 - y3) / (y2 - y1)) * (input - y1));
 };
 
+export const mapAndBound = (input: number, y1: number, y2: number, y3: number, y4: number): number => {
+    const val = map(input, y1, y2, y3, y4);
+    return Math.max(y3, Math.min(y4, val));
+}
+
 export const shadeColor = (color: Color, percent: number): Color => {
     return {
         r: Math.round(Math.max(0, Math.min(color.r * (100 + percent) / 100, 255))),

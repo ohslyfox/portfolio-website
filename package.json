@@ -10,7 +10,8 @@
     "lint": "eslint . --ext .ts",
     "watch": "tsc -b -w",
     "build": "yarn lint && tsc --build",
-    "postbuild": "webpack ./ts/dist/main.js --config webpack.config.js"
+    "postbuild": "webpack ./ts/dist/main.js --config webpack.config.js",
+    "start": "webpack ./ts/dist/main.js --config webpack.config.dev.js"
   },
   "dependencies": {
     "@types/node": "^14.14.37",
