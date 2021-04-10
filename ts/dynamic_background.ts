@@ -1,9 +1,9 @@
 import { AmbientLight, PerspectiveCamera, Scene, Sprite, SpriteMaterial, Texture, TextureLoader, WebGLRenderer } from 'three';
 import { Color, KeyPressEvent, MouseMoveEvent, PointF, TextureKVP } from './types';
-import { lerp, map, mapAndBound, shadeColor } from './util';
+import { lerp, map, shadeColor } from './util';
 import { Fade, getItemFade } from './fade';
 
-const GAP = 50, COUNT_X = 8, COUNT_Z = 30;
+const GAP = 50, COUNT_X = 8, COUNT_Z = 35;
 const PI_2 = Math.PI * 2;
 const PI_2_1000_50 = (PI_2 / 1000) / 20;
 const PI_2_100_50 = (PI_2 / 100) / 10;
@@ -63,7 +63,9 @@ const init = (): void => {
     const container = document.createElement("div");
     document.body.appendChild(container);
 
-    camera.position.z = 850;
+    camera.position.z = 1000;
+    camera.position.x = map(Math.random(), 0, 1, -2000, 2000);
+    camera.position.y = map(Math.random(), 0, 1, -1000, 1000);
     let i = 0;
     let inc = 0;
     for (let ix = 0; ix < COUNT_X; ix++) {
@@ -102,8 +104,12 @@ const renderPageText = () => {
 }
 
 const renderDynamicBackground = () => {
-    const xPos = map(mouseLocation.x, -windowVector.x, windowVector.x, windowVector.x * .20, windowVector.x * -.20);
-    const yPos = map(mouseLocation.y, -windowVector.y, windowVector.y, windowVector.y * -.20, windowVector.y * .20);
+    const xPos = map(mouseLocation.x, -windowVector.x - (windowVector.x * .2), 
+                                       windowVector.x + (windowVector.x * .2),
+                                       windowVector.x * .20, windowVector.x * -.20);
+    const yPos = map(mouseLocation.y, -windowVector.y - (windowVector.y * .1), 
+                                       windowVector.y + (windowVector.y * .1),
+                                       windowVector.y * -.20, windowVector.y * .20);
     camera.position.x = camera.position.x != xPos ? (lerp(camera.position.x, xPos, .01)) : xPos;
     camera.position.y = camera.position.y != yPos ? (lerp(camera.position.y, yPos, .01)) : yPos;
     camera.lookAt(scene.position);
