@@ -1,6 +1,6 @@
 import { AmbientLight, PerspectiveCamera, Scene, Sprite, SpriteMaterial, Texture, TextureLoader, WebGLRenderer } from 'three';
 import { Color, KeyPressEvent, MouseMoveEvent, PointF, TextureKVP } from './types';
-import { lerp, map, shadeColor } from './util';
+import { lerp, map, mapAndBound, shadeColor } from './util';
 import { Fade, getItemFade } from './fade';
 
 const GAP = 50, COUNT_X = 8, COUNT_Z = 30;
@@ -102,8 +102,8 @@ const renderPageText = () => {
 }
 
 const renderDynamicBackground = () => {
-    const xPos = map(mouseLocation.x, -windowVector.x, windowVector.x, 125, -125);
-    const yPos = map(mouseLocation.y, -windowVector.y, windowVector.y, -125, 125);
+    const xPos = map(mouseLocation.x, -windowVector.x, windowVector.x, windowVector.x * .20, windowVector.x * -.20);
+    const yPos = map(mouseLocation.y, -windowVector.y, windowVector.y, windowVector.y * -.20, windowVector.y * .20);
     camera.position.x = camera.position.x != xPos ? (lerp(camera.position.x, xPos, .01)) : xPos;
     camera.position.y = camera.position.y != yPos ? (lerp(camera.position.y, yPos, .01)) : yPos;
     camera.lookAt(scene.position);
