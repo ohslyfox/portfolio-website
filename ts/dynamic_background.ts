@@ -49,7 +49,7 @@ const main = () => {
     camera = new PerspectiveCamera(95, window.innerWidth / window.innerHeight, 1, 100000);
     scene = new Scene();
     renderer = new WebGLRenderer({ alpha: true });
-    pageFade = getItemFade("menu-fade", 0, .8);
+    pageFade = getItemFade("menu-fade", 0, .67);
     windowVector = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     mouseLocation = { x: 0, y: 0 };
     colorIndex = Math.round(Math.random() * (patterns.length - 1));
