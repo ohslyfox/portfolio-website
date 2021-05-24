@@ -1,3 +1,3 @@
-import { mountCanvas } from './dynamic_background';
+import { mountCanvas } from './dynamic-background';
 
 mountCanvas();

@@ -2,7 +2,7 @@ import { AmbientLight, Scene, Sprite, SpriteMaterial, Texture, TextureLoader, We
 import { Color, ISceneCamera, KeyPressEvent, MouseMoveEvent, PointF, TextureKVP } from './types';
 import { lerp, mapAndBound, shadeColor } from './util';
 import { Fade, getItemFade } from './fade';
-import { CameraWrapper } from './cameraWrapper';
+import { CameraWrapper } from './camera-wrapper';
 
 const GAP = 50, COUNT_X = 8, COUNT_Z = 35;
 const PI_2 = Math.PI * 2;
