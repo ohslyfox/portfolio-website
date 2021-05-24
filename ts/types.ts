@@ -24,3 +24,14 @@ export interface MouseMoveEvent {
 export interface KeyPressEvent {
     keyCode: number;
 }
+
+export interface DynamicDomElement {
+    step(): void;
+    elements: NodeListOf<Element>;
+}
+
+export interface ISceneCamera {
+    step(mouseLocation: PointF, windowVector: PointF, mouseDown: boolean): void;
+    onWindowResize(): void;
+    camera: Three.PerspectiveCamera;
+}

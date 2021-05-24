@@ -10,6 +10,7 @@
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+  user-select: none;
 }
 
 .text > a {
@@ -19,14 +20,13 @@
   font-size: 6em;
   text-shadow: -6px 0 rgb(50, 50, 50), 0 3px rgb(50, 50, 50),
     3px 0 rgb(50, 50, 50), 0 -3px rgb(50, 50, 50);
-    transition-timing-function:ease;
-    transition-duration: 0.2s;
-
+  transition-timing-function: ease;
+  transition-duration: 0.2s;
 }
 
 .text > a:hover {
   font-size: 8em;
-  transition-timing-function:ease;
+  transition-timing-function: ease;
   transition-duration: 0.2s;
   color: #fcc782;
   cursor: pointer;
@@ -57,7 +57,7 @@
   overflow: hidden;
 }
 
-.menu-fade{
+.menu-fade {
   padding: 20px;
 }
 
@@ -66,12 +66,12 @@
   outline: none;
   background: transparent;
   position: fixed;
-  transition-timing-function:ease;
+  transition-timing-function: ease;
   transition-duration: 0.5s;
 }
 
 .badge:hover {
   opacity: 85%;
-  transition-timing-function:ease;
+  transition-timing-function: ease;
   transition-duration: 0.5s;
 }

@@ -1,7 +1,8 @@
-import { AmbientLight, PerspectiveCamera, Scene, Sprite, SpriteMaterial, Texture, TextureLoader, WebGLRenderer } from 'three';
-import { Color, KeyPressEvent, MouseMoveEvent, PointF, TextureKVP } from './types';
-import { lerp, map, shadeColor } from './util';
+import { AmbientLight, Scene, Sprite, SpriteMaterial, Texture, TextureLoader, WebGLRenderer } from 'three';
+import { Color, ISceneCamera, KeyPressEvent, MouseMoveEvent, PointF, TextureKVP } from './types';
+import { lerp, mapAndBound, shadeColor } from './util';
 import { Fade, getItemFade } from './fade';
+import { CameraWrapper } from './cameraWrapper';
 
 const GAP = 50, COUNT_X = 8, COUNT_Z = 35;
 const PI_2 = Math.PI * 2;
@@ -28,7 +29,7 @@ const patterns: Color[] = [
     { r: 255, g: 100, b: 255 },
 ];
 
-let camera: PerspectiveCamera;
+let camera: ISceneCamera
 let scene: Scene;
 let renderer: WebGLRenderer;
 const particles: Sprite[] = [];
@@ -41,13 +42,14 @@ let particleColor: Color;
 let particleTexture: TextureKVP;
 let colorIndex: number;
 let secretMessage = "";
+let mouseDown = false;
 
 const counts: number[] = [];
 let count = 0;
 
 const main = () => {
-    camera = new PerspectiveCamera(95, window.innerWidth / window.innerHeight, 1, 100000);
     scene = new Scene();
+    camera = CameraWrapper.getCameraWrapper(scene);
     renderer = new WebGLRenderer({ alpha: true });
     pageFade = getItemFade("menu-fade", 0, .67);
     windowVector = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -62,10 +64,6 @@ const main = () => {
 const init = (): void => {
     const container = document.createElement("div");
     document.body.appendChild(container);
-
-    camera.position.z = 1000;
-    camera.position.x = map(Math.random(), 0, 1, -2000, 2000);
-    camera.position.y = map(Math.random(), 0, 1, -1000, 1000);
     let i = 0;
     let inc = 0;
     for (let ix = 0; ix < COUNT_X; ix++) {
@@ -83,6 +81,8 @@ const init = (): void => {
 
     container.appendChild(renderer.domElement);
     document.addEventListener("mousemove", onDocumentMouseMove, false);
+    document.addEventListener("mousedown", () => mouseDown = true, false);
+    document.addEventListener("mouseup", () => mouseDown = false, false);
     document.addEventListener("dblclick", onDocumentClick, false);
     document.addEventListener("keypress", onKeyPress, false);
     window.addEventListener("resize", onWindowResize, false);
@@ -95,42 +95,31 @@ const animate = (): void => {
 }
 
 const render = (): void => {
-    renderPageText();
-    renderDynamicBackground();
-}
-
-const renderPageText = () => {
+    // frame computations
     pageFade.step();
+    camera.step(mouseLocation, windowVector, mouseDown);
+    stepDynamicBackground();
+
+    // render frame
+    renderer.render(scene, camera.camera);
 }
 
-const renderDynamicBackground = () => {
-    const xPos = map(mouseLocation.x, -windowVector.x - (windowVector.x * .2), 
-                                       windowVector.x + (windowVector.x * .2),
-                                       windowVector.x * .20, windowVector.x * -.20);
-    const yPos = map(mouseLocation.y, -windowVector.y - (windowVector.y * .1), 
-                                       windowVector.y + (windowVector.y * .1),
-                                       windowVector.y * -.20, windowVector.y * .20);
-    camera.position.x = camera.position.x != xPos ? (lerp(camera.position.x, xPos, .01)) : xPos;
-    camera.position.y = camera.position.y != yPos ? (lerp(camera.position.y, yPos, .01)) : yPos;
-    camera.lookAt(scene.position);
-
+const stepDynamicBackground = () => {
     let i = 0;
     for (let ix = 0; ix < COUNT_X; ix++) {
         for (let iz = 0; iz < COUNT_Z; iz++) {
             const particle = particles[i++];
             particle.position.x = 10 * (iz + 2) * Math.cos(iz + 1 * counts[ix]);
             particle.position.y = 10 * (iz + 2) * Math.sin(iz + 1 * counts[ix]);
-            particle.scale.x = particle.scale.y = 2 + iz + (Math.sin(iz + count) * 5.5);
+            particle.scale.x = particle.scale.y = 7 + iz + (Math.sin(iz + count) * 6);
 
-            const shadedColor = shadeColor(particleColor, map(particle.scale.x, 0, 30, -70, 40));
+            const shadedColor = shadeColor(particleColor, mapAndBound(particle.scale.x, 4, 30, -80, 40));
             particle.material.color.set("rgb(" + shadedColor.r + "," + shadedColor.g + "," + shadedColor.b + ")");
         }
         counts[ix] += PI_2_1000_50;
     }
     count += PI_2_100_50;
     stepColor();
-
-    renderer.render(scene, camera);
 }
 
 let colorStep = 0;
@@ -171,36 +160,22 @@ const onWindowResize = (): void => {
         x: window.innerWidth / 2,
         y: window.innerHeight / 2
     }
-
-    // update camera and re render
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    camera.onWindowResize();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 const onDocumentClick = (): void => {
     if (mouseLocation.x > -windowVector.x && mouseLocation.x < -(windowVector.x / 2)) {
         if (mouseLocation.y > windowVector.y / 2 && mouseLocation.y < windowVector.y) {
-            switch (secretMessage) {
-                case "cow":
-                    particleTexture = {
-                        id: "COW",
-                        value: textures["COW"],
-                    }
-                    break;
-                case "fox":
-                    particleTexture = {
-                        id: "FOX",
-                        value: textures["FOX"],
-                    }
-                    break;
-                default:
-                    particleTexture = {
-                        id: particleTexture.id == "STAR" ? "CIRCLE" : "STAR",
-                        value: particleTexture.id == "STAR" ? textures["CIRCLE"] : textures["STAR"]
-                    }
-                    break;
-            }
+            particleTexture = secretMessage in textures ?
+                {
+                    id: secretMessage,
+                    value: textures[secretMessage]
+                } :
+                {
+                    id: particleTexture.id == "STAR" ? "CIRCLE" : "STAR",
+                    value: particleTexture.id == "STAR" ? textures["CIRCLE"] : textures["STAR"]
+                }
 
             secretMessage = "";
             particles.forEach((p) => {
@@ -222,7 +197,7 @@ const onKeyPress = (event: KeyPressEvent): void => {
     if (secretMessage.length + 1 > 3) {
         secretMessage = "";
     }
-    secretMessage += String.fromCharCode(event.keyCode);
+    secretMessage = `${secretMessage}${String.fromCharCode(event.keyCode)}`.toUpperCase();
 }
 
 let singleton = false
