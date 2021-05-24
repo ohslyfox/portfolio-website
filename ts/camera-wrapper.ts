@@ -16,7 +16,7 @@ export class CameraWrapper implements ISceneCamera {
         if (CameraWrapper.instance === null) {
             CameraWrapper.instance = new CameraWrapper(scene);
         }
-        return this.instance;
+        return CameraWrapper.instance;
     }
 
     private constructor(scene: Three.Scene) {
