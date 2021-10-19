@@ -1,3 +1,9 @@
+# Archived
+
+See [new repo](https://github.com/ohslyfox/portfolio).
+
+---
+
 # patrickfinger.dev
 
 Clone the repo
